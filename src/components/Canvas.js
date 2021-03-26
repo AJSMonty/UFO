@@ -49,7 +49,6 @@ class Canvas extends React.Component {
         this.changeAxis();
         this.wobbleUFO();
         this.changeWobbleAmount();
-        console.log(this.state.starFade)
     }
 
     changeColor() {
