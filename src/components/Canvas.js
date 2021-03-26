@@ -22,12 +22,15 @@ class Canvas extends React.Component {
             skyColorG: 205,
             skyColorB: 246,
             sunUp: false,
+            starsOut: false,
+            starFade: 0.0,
         }
     }
  
     drawScene(ctx, canvas){
         ctx.clearRect(0,0,canvas.width, canvas.height);
         this.drawSky(ctx);
+        this.starsOut(ctx)
         this.drawCloudOne(ctx);
         this.drawCloudTwo(ctx);
         this.drawCloudThree(ctx);
@@ -38,9 +41,7 @@ class Canvas extends React.Component {
         this.drawTree(ctx, 670, 320);
         this.drawTree(ctx, 640, 300);
         this.drawTree(ctx, 760, 200);
-        this.drawTree(ctx, 710, 250);
-        
-        
+        this.drawTree(ctx, 710, 250);       
         this.ufoBeam(ctx);
         this.drawUFO(ctx);
         this.ufoCabin(ctx);
@@ -48,6 +49,7 @@ class Canvas extends React.Component {
         this.changeAxis();
         this.wobbleUFO();
         this.changeWobbleAmount();
+        console.log(this.state.starFade)
     }
 
     changeColor() {
@@ -127,6 +129,41 @@ class Canvas extends React.Component {
         ctx.fill();
     }
 
+    drawStars(ctx, x, y){
+        ctx.beginPath()
+        ctx.arc(x, y, 1, 0, 2 *  Math.PI);
+        ctx.fillStyle = `rgba(255, 255, 0, ${this.state.starFade})`;
+        ctx.fill();
+    }
+
+    drawMulipleStars(ctx){
+        this.drawStars(ctx, 100, 70)
+        this.drawStars(ctx, 300, 60)
+        this.drawStars(ctx, 200, 50)
+        this.drawStars(ctx, 600, 100)
+        this.drawStars(ctx, 250, 100)
+        this.drawStars(ctx, 450, 80)
+        this.drawStars(ctx, 550, 70)
+        this.drawStars(ctx, 350, 40)
+        this.drawStars(ctx, 700, 50)
+
+        if (this.state.starFade === 1) this.setState(state => ({starsOut: state.starsOut = true}))
+        if (this.state.starFade === 0) this.setState(state => ({starsOut: state.starsOut = false}))
+        this.state.starsOut ? this.starsDown() : this.starsUp()
+    }
+
+    starsOut(ctx){
+        if (this.state.skyColorB < 50) this.drawMulipleStars(ctx)
+    }
+
+    starsUp(){
+        this.setState(state => ({starFade: state.starFade + 0.01}))
+    }
+
+    starsDown(){
+        this.setState(state => ({starFade: state.starFade - 0.01}))
+    }
+
     sunRise(){
         this.setState(state => ({skyColorR: state.skyColorR + 1}) );
         this.setState(state => ({skyColorG: state.skyColorG + 1}) );
@@ -140,7 +177,7 @@ class Canvas extends React.Component {
     }
 
     changeSkyColor(){
-        if (this.state.skyColorR === 102) this.setState(state => ({sunUp: state.sunUp = false}) );
+        if (this.state.skyColorB === 102) this.setState(state => ({sunUp: state.sunUp = false}) );
         if (this.state.skyColorB === 0) this.setState(state => ({sunUp: state.sunUp = true}) );
         this.state.sunUp ? this.sunRise() : this.sunSet();
     }
